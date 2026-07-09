@@ -1,19 +1,16 @@
--- OTIMIZADOR DE FPS SUPREMO + GRÁFICOS PARA PVP + REAÇÃO ULTRA RÁPIDA DIRETA
+-- OTIMIZADOR SUPREMO + CLIQUE SEGURO (SEM TRAVAR O ANALÓGICO / BLOX FRUITS)
 if not game:IsLoaded() then game.Loaded:Wait() end
 
 local Workspace = game:GetService("Workspace")
 local Lighting = game:GetService("Lighting")
 local Terrain = Workspace:FindFirstChildOfClass("Terrain")
-local Stats = game:GetService("Stats")
 local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local LocalPlayer = Players.LocalPlayer
 
 -- CONFIGURAÇÃO DE VELOCIDADE
 local VELOCIDADE_DISCRETA = 20
 
--- Função ultra leve para manter a velocidade ativada
 local function AplicarVelocidade(char)
     if not char then return end
     local humanoid = char:WaitForChild("Humanoid", 5)
@@ -25,7 +22,6 @@ end
 if LocalPlayer.Character then AplicarVelocidade(LocalPlayer.Character) end
 LocalPlayer.CharacterAdded:Connect(AplicarVelocidade)
 
--- Loop leve em segundo plano para garantir que a velocidade não resete
 task.spawn(function()
     while task.wait(1.5) do
         if LocalPlayer.Character then
@@ -37,7 +33,7 @@ task.spawn(function()
     end
 end)
 
--- 1. CONFIGURAÇÕES CRUCIAL DE GRÁFICO (FORÇA O MÍNIMO POSSÍVEL)
+-- 1. CONFIGURAÇÕES INTERNAS DE RENDERIZAÇÃO
 settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
 setfpscap(120)
 
@@ -46,7 +42,6 @@ local function OtimizarObjeto(obj)
     if obj:IsA("Texture") or obj:IsA("Decal") or obj:IsA("Sky") then
         obj:Destroy()
     elseif obj:IsA("Part") or obj:IsA("MeshPart") or obj:IsA("CornerWedgePart") or obj:IsA("WedgePart") then
-        -- Não deleta o jogador, apenas deixa o boneco liso para remover lag
         obj.Material = Enum.Material.SmoothPlastic
         obj.Reflectance = 0
         obj.CastShadow = false
@@ -62,7 +57,7 @@ end
 for _, obj in ipairs(Workspace:GetDescendants()) do pcall(OtimizarObjeto) end
 Workspace.DescendantAdded:Connect(function(obj) pcall(OtimizarObjeto) end)
 
--- 3. DESATIVA ILUMINAÇÃO, SOMBRAS E LIMPA BUGS DE TELA A CADA 0.5s
+-- 3. DESATIVA ILUMINAÇÃO, SOMBRAS E LIMPA BUGS DE TELA (ANTI-PORTAL)
 local function LimparFiltrosEBugs()
     if Lighting then
         Lighting.GlobalShadows = false
@@ -84,30 +79,24 @@ local function LimparFiltrosEBugs()
 end
 
 LimparFiltrosEBugs()
-
 task.spawn(function()
     while task.wait(0.5) do
         LimparFiltrosEBugs()
     end
 end)
 
--- 4. REAÇÃO DE TOQUE ULTRA RÁPIDA (TELA INTEIRA ATIVA)
-local processandoClique = false
-UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
-    if gameProcessedEvent then return end
-    
-    if (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1) and not processandoClique then
-        processandoClique = true
-        
-        VirtualInputManager:SendMouseButtonEvent(input.Position.X, input.Position.Y, 0, true, game, 0)
-        VirtualInputManager:SendMouseButtonEvent(input.Position.X, input.Position.Y, 0, false, game, 0)
-        
-        task.wait()
-        processandoClique = false
+-- 4. CLIQUE AUTOMÁTICO SEGURO EM SEGUNDO PLANO (NÃO TRAVA O ANALÓGICO)
+task.spawn(function()
+    while task.wait(0.1) do
+        -- Simula o clique apenas se você estiver segurando uma ferramenta/arma na mão
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool") then
+            VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+            VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+        end
     end
 end)
 
--- 5. REMOVE TOTALMENTE OS EFEITOS DA ÁGUA
+-- 5. REMOVE TOTALMENTE OS EFEITOS DA ÁGUA E LIMPA CHÃO
 if Terrain then
     Terrain.WaterWaveSize = 0
     Terrain.WaterWaveSpeed = 0
@@ -115,9 +104,8 @@ if Terrain then
     Terrain.WaterTransparency = 1
 end
 
--- 6. LIMPEZA DE DETRITOS NO CHÃO
 if Workspace:FindFirstChild("Debris") then
     Workspace.Debris:ClearAllChildren()
 end
 
-print("[Sucesso] Script Atualizado: Gráficos Otimizados, PVP Visível e Toque Instantâneo!")
+print("[Sucesso] Script de Blox Fruits com Clique Seguro e Sem Lag Ativado!")
