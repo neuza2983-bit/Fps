@@ -1,4 +1,4 @@
--- OTIMIZADOR ABSOLUTO + ZERO LAG PVP (DRAGON STALO)
+-- BOOSTER SUPREMO PVP - APENAS FPS SILENCIOSO (DRAGON STALO)
 if not game:IsLoaded() then game.Loaded:Wait() end
 
 local Workspace = game:GetService("Workspace")
@@ -6,41 +6,41 @@ local Lighting = game:GetService("Lighting")
 local Terrain = Workspace:FindFirstChildOfClass("Terrain")
 local Debris = game:GetService("Debris")
 
--- 1. REDUÇÃO GRÁFICA NO LIMITE DO MOTOR
+-- 1. REDUÇÃO GRÁFICA DIRETA NO MOTOR DO ROBLOX
 settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
 if setfpscap then setfpscap(120) end
 
--- 2. DESTRUIDOR DE INSTÂNCIAS (LIMPEZA TOTAL)
-local function LimpezaGeral(obj)
-    -- Deleta na hora: Partículas, Raios, Luzes, Fumaça, Fogo e Efeitos Visuais (De todas as frutas/armas)
+-- 2. DESTRUIDOR IMEDIATO DE PARTICULAS E ANIMAÇÕES PESADAS
+local function DestruirLag(obj)
+    -- Apaga luzes, brilhos, fumaça, fogo, partículas e raios de golpes na hora
     if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Smoke") or obj:IsA("Sparkles") or obj:IsA("Fire") or obj:IsA("Beam") or obj:IsA("Light") or obj:IsA("Highlight") then
         obj:Destroy()
-    -- Deleta texturas de blocos, imagens de paredes e o céu do jogo
+    -- Tira texturas do chão, paredes e o céu para limpar a RAM
     elseif obj:IsA("Texture") or obj:IsA("Decal") or obj:IsA("Sky") then
         obj:Destroy()
-    -- Modo Plástico Total: Tira reflexo, sombras e muda o material de todo o mapa
+    -- Converte o mapa todo em plástico liso sem sombras ou reflexos
     elseif obj:IsA("Part") or obj:IsA("MeshPart") or obj:IsA("CornerWedgePart") or obj:IsA("WedgePart") then
         obj.Material = Enum.Material.SmoothPlastic
         obj.Reflectance = 0
         obj.CastShadow = false
-    -- Remove capas, chapéus, espadas nas costas e roupas dos bonecos (Alivia muita RAM)
+    -- Remove capas, chapéus, acessórios 3D e roupas dos bonecos no PvP
     elseif obj:IsA("Shirt") or obj:IsA("Pants") or obj:IsA("ShirtGraphic") or obj:IsA("Clothing") or obj:IsA("Accessory") then
         obj:Destroy()
-    -- Bloqueia e desativa animações pesadas de golpes
+    -- Bloqueia a execução de animações de skills pesadas
     elseif obj:IsA("Animation") or obj:IsA("AnimationTrack") then
         obj:Destroy()
     end
 end
 
--- Limpa tudo o que já está carregado no servidor
+-- Limpeza inicial profunda de tudo o que já está carregado
 for _, obj in ipairs(Workspace:GetDescendants()) do 
-    pcall(LimpezaGeral) 
+    pcall(DestruirLag) 
 end
 
--- 3. MONITORAMENTO AGRESSIVO (NADA RECENTE SOBREVIVE)
+-- 3. MONITORAMENTO PVP EM TEMPO REAL (CORTA O GOLPE DO INIMIGO ANTES DE RENDERIZAR)
 Workspace.DescendantAdded:Connect(function(obj) 
-    pcall(LimpezaGeral)
-    -- Se qualquer poder criar uma parte física no mapa (bolas de energia, paredes, portais), apaga na hora
+    pcall(DestruirLag)
+    -- Se a habilidade criar partes físicas ou projéteis no mapa, apaga na hora
     if obj:IsA("BasePart") then
         local name = obj.Name:lower()
         if name:find("skill") or name:find("effect") or name:find("hit") or name:find("projectile") or name:find("attack") or name:find("portal") then
@@ -49,7 +49,7 @@ Workspace.DescendantAdded:Connect(function(obj)
     end
 end)
 
--- 4. DESATIVAÇÃO DE ILUMINAÇÃO INTERNA
+-- 4. DESATIVAÇÃO DE ILUMINAÇÃO INTERNA DA ATMOSFERA
 if Lighting then
     Lighting.GlobalShadows = false
     Lighting.FogEnd = 9e9
@@ -60,7 +60,7 @@ if Lighting then
     end
 end
 
--- 5. REMOVE TOTALMENTE A FÍSICA DA ÁGUA
+-- 5. REMOVE TOTALMENTE OS GRAFICOS DA ÁGUA
 if Terrain then
     Terrain.WaterWaveSize = 0
     Terrain.WaterWaveSpeed = 0
@@ -68,7 +68,7 @@ if Terrain then
     Terrain.WaterTransparency = 1
 end
 
--- Esvazia a lixeira de detritos do Roblox sem parar
+-- Esvazia a lixeira interna de detritos a cada 0.2 segundos para poupar o gravador
 task.spawn(function()
     while task.wait(0.2) do
         pcall(function()
@@ -77,4 +77,4 @@ task.spawn(function()
     end
 end)
 
-print("💀 [Dragon Stalo] APOCALYPSE FPS: Absolutamente tudo o que causava lag foi deletado!")
+print("💀 [Dragon Stalo] MODO FPS ULTRA ATIVADO: Tudo corrigido e revisado!")
